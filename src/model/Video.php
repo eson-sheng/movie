@@ -75,4 +75,18 @@ class Video
 
         return "{$thum_path}/{$file_name}.jpg";
     }
+
+    /**
+     * @desc 检查目录下是否有该视频
+     * @param $name
+     * @return bool
+     */
+    public function checkoutVideoName ($name)
+    {
+        $video_path = $this->videoPath;
+        if (is_file("{$video_path}/{$name}.mp4")) {
+            return true;
+        }
+        return false;
+    }
 }

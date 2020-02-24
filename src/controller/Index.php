@@ -40,9 +40,13 @@ class Index
      */
     public function show ()
     {
-        /**
-         * @FIXME 视频播放页面
-         */
+        $name = $_REQUEST['N'];
+
+        $model = new Video();
+        if (!$model->checkoutVideoName($name)) {
+            return view('error');
+        }
+
         return view(__FUNCTION__);
     }
 }
