@@ -48,7 +48,11 @@ class Index
         }
 
         return view(__FUNCTION__, [
+            'id' => md5($name),
             'name' => $name,
+            'api' => config('danmaku.api'),
+            'token' => 'token',
+            'user' => ip(),
         ]);
     }
 }

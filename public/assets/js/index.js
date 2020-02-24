@@ -23,6 +23,14 @@ const dp = new DPlayer({
     autoplay: true,
     screenshot: true,
     theme: 'pink',
+    danmaku: {
+        id: json.id,
+        api: json.api,
+        token: json.token,
+        user: json.user,
+        bottom: '15%',
+        unlimited: true,
+    },
     contextmenu: [],
 });
 
