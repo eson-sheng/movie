@@ -25,3 +25,20 @@ const dp = new DPlayer({
     theme: 'pink',
     contextmenu: [],
 });
+
+/**
+ * 修复 bug 屏幕自适应引起的全屏显示错误
+ */
+dp.on('webfullscreen', function () {
+    dplayer.style = null;
+});
+
+dp.on('webfullscreen_cancel', function () {
+    refresh();
+});
+
+dp.on('fullscreen_cancel', function () {
+    if (dplayer.className.indexOf("dplayer-fulled") !== -1) {
+        dplayer.style = null;
+    }
+});
