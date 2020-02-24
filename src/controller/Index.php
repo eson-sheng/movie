@@ -9,6 +9,8 @@
 namespace controller;
 
 use model\Video;
+use ResponseCode as ErrorCode;
+use validate\Danmaku as checkoutDanmaku;
 
 class Index
 {
@@ -79,6 +81,20 @@ class Index
      */
     public function add ()
     {
+        $params = json_decode(
+            file_get_contents('php://input'),
+            true
+        );
+
+        $checkoutDanmaku = new checkoutDanmaku();
+        if (!$checkoutDanmaku->checkoutAdd($params)) {
+            return json([
+                'message' => $checkoutDanmaku->error_msg,
+            ], $checkoutDanmaku->error_code);
+        }
+
+        dd($params);
+
         /**
          * TODO
          */
@@ -93,5 +109,7 @@ class Index
         /**
          * TODO
          */
+        $code = ErrorCode::SUCCESS;
+        return json([], $code);
     }
 }
