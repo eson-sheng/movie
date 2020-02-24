@@ -14,7 +14,16 @@ class Index
 {
     public function run ()
     {
+        $this->index();
+    }
+
+    public function index ()
+    {
         $model = new IndexModel();
-        echo $model->v;
+        $var = $model->v;
+
+        return view(__FUNCTION__,[
+            'var' => $var,
+        ]);
     }
 }
