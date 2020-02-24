@@ -9,6 +9,7 @@
 namespace controller;
 
 use model\Danmaku;
+use model\Token;
 use model\Video;
 use ResponseCode as ErrorCode;
 use validate\Danmaku as checkoutDanmaku;
@@ -37,6 +38,18 @@ class Index
         // 视频播放页
         if (!empty($_REQUEST['N'])) {
             return $this->show();
+        }
+
+        // token api
+        if (!empty($_GET['s'])) {
+            if ($_GET['s'] == 'token') {
+                $tokenModel = new Token();
+                $code = ErrorCode::SUCCESS;
+                return json([
+                    'message' => ErrorCode::CODE_MAP[$code],
+                    'info' => $tokenModel->getToken(),
+                ], $code);
+            }
         }
 
         // 视频列表页
