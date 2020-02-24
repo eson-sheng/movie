@@ -8,6 +8,7 @@
 
 namespace controller;
 
+use model\Danmaku;
 use model\Video;
 use ResponseCode as ErrorCode;
 use validate\Danmaku as checkoutDanmaku;
@@ -93,11 +94,22 @@ class Index
             ], $checkoutDanmaku->error_code);
         }
 
-        dd($params);
+        $DanmakuModel = new Danmaku();
+        $ret = $DanmakuModel->add($params);
+        if (!$ret['status']) {
+            $code = ErrorCode::VIDEO_DANMAKU_INSERT_ERROR;
+            return json([
+                'message' => [
+                    ErrorCode::CODE_MAP[$code],
+                    $ret['info'],
+                ],
+            ], $code);
+        }
 
-        /**
-         * TODO
-         */
+        $code = ErrorCode::SUCCESS;
+        return json([
+            'message' => ErrorCode::CODE_MAP[$code],
+        ], $code);
     }
 
     /**

@@ -45,4 +45,43 @@ class Index
             constant("PDO::ATTR_SERVER_VERSION")
         );
     }
+
+    /**
+     * @desc 新增数据
+     * @param $table
+     * @param $columns
+     * @return array [status => bool,info => rowCount/error]
+     */
+    public function insert ($table, $columns)
+    {
+        $keys = [];
+        foreach (array_keys($columns) as $key => $value) {
+            if ($value === '*' || strpos($value, '.') !== false || strpos($value, '`') !== false) {
+                //不用做处理
+            } elseif (strpos($value, '`') === false) {
+                $value = '`' . trim($value) . '`';
+            }
+            $keys[$key] = $value;
+        }
+
+        $placeholder = ":" . join(',:', array_keys($columns));
+        $fieldsStr = join(',', $keys);
+        $sql = "INSERT {$table}({$fieldsStr}) VALUES({$placeholder})";
+        $stmt = $this->_db->prepare($sql);
+
+        try {
+            $this->_db->beginTransaction();
+            $ret['status'] = $stmt->execute($columns);
+            $ret['info'] = $stmt->rowCount();
+            $ret['lastID'] = $this->_db->lastInsertId();
+            $this->_db->commit();
+            return $ret;
+        } catch (\Exception $e) {
+            $this->_db->rollback();
+            return [
+                'status' => false,
+                'info' => $e->getMessage(),
+            ];
+        }
+    }
 }
