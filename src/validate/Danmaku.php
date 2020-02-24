@@ -71,4 +71,20 @@ class Danmaku extends Index
 
         return true;
     }
+
+    public function checkoutShowList ($param)
+    {
+        if (empty($param['id'])) {
+            $this->error(ErrorCode::VID_ERROR);
+            return false;
+        }
+
+        $vid = $param['id'];
+        if (strlen($vid) != 32) {
+            $this->error(ErrorCode::VID_ERROR);
+            return false;
+        }
+
+        return true;
+    }
 }

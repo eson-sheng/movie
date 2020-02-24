@@ -25,4 +25,44 @@ class Danmaku extends Index
             'equipment' => $_SERVER['HTTP_USER_AGENT'] ?: '',
         ]);
     }
+
+    public function showList ($vid)
+    {
+        $stmt = $this->_db->prepare("
+            SELECT 
+                `time`,`type`,`color`,`author`,`content` 
+            FROM 
+                `danmaku` 
+            WHERE
+                vid = :vid;
+        ");
+
+        try {
+            $this->_db->beginTransaction();
+            $ret['status'] = $stmt->execute([
+                'vid' => $vid,
+            ]);
+            $ret['info'] = $this->showListByDealWith(
+                $stmt->fetchAll(\PDO::FETCH_NUM)
+            );
+            $this->_db->commit();
+            return $ret;
+        } catch (\Exception $e) {
+            $this->_db->rollback();
+            return [
+                'status' => false,
+                'info' => $e->getMessage(),
+            ];
+        }
+    }
+
+    public function showListByDealWith ($items)
+    {
+        foreach ($items as $key => $value) {
+            for ($i = 0; $i < 3; $i++) {
+                $items[$key][$i] = floatval($value[$i]);
+            }
+        }
+        return $items;
+    }
 }

@@ -134,10 +134,26 @@ class Index
      */
     public function showList ()
     {
-        /**
-         * TODO
-         */
+        $checkoutDanmaku = new checkoutDanmaku();
+        if (!$checkoutDanmaku->checkoutShowList($_GET)) {
+            return json([
+                'message' => $checkoutDanmaku->error_msg,
+            ], $checkoutDanmaku->error_code);
+        }
+
+        $DanmakuModel = new Danmaku();
+        $ret = $DanmakuModel->showList($_GET['id']);
+        if (!$ret['status']) {
+            $code = ErrorCode::VIDEO_DANMAKU_INSERT_ERROR;
+            return json([
+                'message' => [
+                    ErrorCode::CODE_MAP[$code],
+                    $ret['info'],
+                ],
+            ], $code);
+        }
+
         $code = ErrorCode::SUCCESS;
-        return json([], $code);
+        return json($ret['info'], $code);
     }
 }
