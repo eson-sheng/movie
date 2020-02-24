@@ -47,6 +47,8 @@ class Index
             return view('error');
         }
 
-        return view(__FUNCTION__);
+        return view(__FUNCTION__, [
+            'name' => $name,
+        ]);
     }
 }

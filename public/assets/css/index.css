@@ -47,3 +47,9 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+#dplayer {
+    margin: 0 auto;
+    min-width: 960px;
+    min-height: 480px;
+}
