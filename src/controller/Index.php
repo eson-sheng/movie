@@ -8,22 +8,30 @@
 
 namespace controller;
 
-use model\Index as IndexModel;
-
 class Index
 {
     public function run ()
     {
-        $this->index();
+        if (!empty($_REQUEST['N'])) {
+            return $this->show();
+        }
+
+        return $this->index();
     }
 
     public function index ()
     {
-        $model = new IndexModel();
-        $var = $model->v;
+        /**
+         * @FIXME 列表数据
+         */
+        return view(__FUNCTION__);
+    }
 
-        return view(__FUNCTION__,[
-            'var' => $var,
-        ]);
+    public function show ()
+    {
+        /**
+         * @FIXME 视频播放页面
+         */
+        return view(__FUNCTION__);
     }
 }

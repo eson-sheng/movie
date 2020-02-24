@@ -1,0 +1,49 @@
+.movie-body {
+    background-color: #2f343f;
+}
+
+.movie-list li {
+    list-style-type: none;
+    margin: 8px;
+    float: left;
+}
+
+.movie-list li div {
+    background-color: grey;
+    width: 208px;
+    height: 155px;
+    text-align: center;
+    padding: 2px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.movie-list li div:hover {
+    background-image: url("./../img/play.png");
+    background-position: 50% 35%;
+    background-repeat: no-repeat;
+    background-size: 35%;
+}
+
+.movie-list li div a img:hover {
+    opacity: 0.3;
+    transition: 0.6s;
+}
+
+.movie-list li div a {
+    text-decoration: none;
+}
+
+.movie-list li div a img {
+    margin: 6px;
+    width: 192px;
+    height: 108px;
+}
+
+.movie-list li div a p {
+    color: #f0f0f0;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
