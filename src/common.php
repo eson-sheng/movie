@@ -85,3 +85,16 @@ function ip ($type = 0, $adv = true)
 
     return $ip[$type];
 }
+
+/**
+ * @param array $data
+ * @param int $code
+ */
+function json ($data = [], $code = 0)
+{
+    header("Content-Type: application/json; charset=UTF-8");
+    echo json_encode([
+        'code' => $code,
+        'data' => $data
+    ]);
+}

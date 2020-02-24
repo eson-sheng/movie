@@ -14,6 +14,23 @@ class Index
 {
     public function run ()
     {
+        // 接口api
+        if (!empty($_REQUEST['api'])) {
+
+            // 添加弹幕
+            if (empty($_GET['id'])) {
+                return $this->add();
+            }
+
+            // 获取弹幕列表
+            if (!empty($_GET['id'])) {
+                return $this->showList();
+            }
+
+            // 默认返回
+            return json();
+        }
+
         // 视频播放页
         if (!empty($_REQUEST['N'])) {
             return $this->show();
@@ -54,5 +71,27 @@ class Index
             'token' => 'token',
             'user' => ip(),
         ]);
+    }
+
+    /**
+     * @desc 添加弹幕接口
+     * @return false|string
+     */
+    public function add ()
+    {
+        /**
+         * TODO
+         */
+    }
+
+    /**
+     * @desc 获取视频弹幕接口
+     * @return false|string
+     */
+    public function showList ()
+    {
+        /**
+         * TODO
+         */
     }
 }
