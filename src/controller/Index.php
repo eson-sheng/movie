@@ -8,25 +8,36 @@
 
 namespace controller;
 
+use model\Video;
+
 class Index
 {
     public function run ()
     {
+        // 视频播放页
         if (!empty($_REQUEST['N'])) {
             return $this->show();
         }
 
+        // 视频列表页
         return $this->index();
     }
 
+    /**
+     * @desc 首页 - 视频列表页
+     */
     public function index ()
     {
-        /**
-         * @FIXME 列表数据
-         */
-        return view(__FUNCTION__);
+        $model = new Video();
+        $list = $model->getVideoList();
+        return view(__FUNCTION__, [
+            'list' => $list,
+        ]);
     }
 
+    /**
+     * @desc 视频播放页
+     */
     public function show ()
     {
         /**

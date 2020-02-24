@@ -14,14 +14,16 @@
                 alt="看电影" title="看电影">
     </a></h1>
     <ul class="movie-list">
+        <?php foreach ($list as $item): ?>
         <li>
             <div>
-                <a href="?N=我的影片">
-                    <img src="./video/thum/我的影片.jpg" title="我的影片">
-                    <p>我的影片</p>
+                <a href="?N=<?= $item; ?>">
+                    <img src="./video/thum/<?= $item; ?>.jpg" title="<?= $item; ?>">
+                    <p><?= $item; ?></p>
                 </a>
             </div>
         </li>
+        <?php endforeach ?>
     </ul>
 </div>
 </body>
