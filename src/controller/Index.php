@@ -80,11 +80,14 @@ class Index
             return view('error');
         }
 
+        $tokenModel = new Token();
+        $token = $tokenModel->getToken();
+
         return view(__FUNCTION__, [
             'id' => md5($name),
             'name' => $name,
             'api' => config('danmaku.api'),
-            'token' => 'token',
+            'token' => $token,
             'user' => ip(),
         ]);
     }

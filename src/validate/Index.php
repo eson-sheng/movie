@@ -8,6 +8,7 @@
 
 namespace validate;
 
+use model\Token;
 use ResponseCode as ErrorCode;
 
 class Index
@@ -30,5 +31,14 @@ class Index
     {
         $this->error_code = $code;
         $this->error_msg = ErrorCode::CODE_MAP[$code];
+    }
+
+    public function checkoutToken ($token)
+    {
+        $tokenModel = new Token();
+        if (!$tokenModel->checkoutToken($token)) {
+            return false;
+        }
+        return true;
     }
 }

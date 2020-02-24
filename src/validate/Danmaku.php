@@ -14,6 +14,16 @@ class Danmaku extends Index
 {
     public function checkoutAdd ($data)
     {
+        if (empty($data['token'])) {
+            $this->error(ErrorCode::TOKEN_ERROR);
+            return false;
+        }
+
+        if (!$this->checkoutToken($data['token'])) {
+            $this->error(ErrorCode::TOKEN_ERROR);
+            return false;
+        }
+
         if (empty($data['id'])) {
             $this->error(ErrorCode::VID_ERROR);
             return false;
