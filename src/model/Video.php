@@ -30,7 +30,7 @@ class Video
         $handle = opendir($path);
         if ($handle) {
             while (($file = readdir($handle)) == true) {
-                if ($file != '.' && $file != '..') {
+                if ($file != '.' && $file != '..' && $file != 'thum') {
                     $p = "{$path}/{$file}";
                     if (is_dir($p)) {
                         $this->getVideoList($p);
