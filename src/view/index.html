@@ -17,10 +17,18 @@
         <?php foreach ($list as $item): ?>
         <li>
             <div>
+                <?php if (is_array($item)): ?>
+                <a href="?N=<?= $item['hash']; ?>&T=hls">
+                    <img src="./video/hls/<?= $item['thum']; ?>"
+                         title="<?= $item['name']; ?>">
+                    <p><?= $item['name']; ?></p>
+                </a>
+                <?php else: ?>
                 <a href="?N=<?= $item; ?>">
                     <img src="./video/thum/<?= $item; ?>.jpg" title="<?= $item; ?>">
                     <p><?= $item; ?></p>
                 </a>
+                <?php endif; ?>
             </div>
         </li>
         <?php endforeach ?>

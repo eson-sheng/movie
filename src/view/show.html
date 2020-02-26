@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title><?= $name; ?></title>
+    <title><?= $title; ?></title>
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="stylesheet" href="./plugin/dplayer/dist/DPlayer.min.css" />
     <link rel="stylesheet" href="./assets/css/index.css">
@@ -18,13 +18,7 @@
 </div>
 </body>
 <script type="text/javascript">
-    json = {
-        'id': '<?= $id; ?>',
-        'name' : '<?= $name; ?>',
-        'token': '<?= $token; ?>',
-        'user': '<?= $user; ?>',
-        'api': '<?= $api; ?>',
-    };
+    json = <?= $json; ?>;
 </script>
 <script type="text/javascript" src="./plugin/hls.js/dist/hls.min.js"></script>
 <script type="text/javascript" src="./plugin/dplayer/dist/DPlayer.min.js"></script>

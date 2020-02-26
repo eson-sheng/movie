@@ -17,8 +17,8 @@ function refresh() {
 const dp = new DPlayer({
     container: dplayer,
     video: {
-        url: './video/' + json.name + '.mp4',
-        pic: './video/thum/' + json.name + '.jpg',
+        url: json.url,
+        pic: json.pic,
     },
     autoplay: true,
     screenshot: true,

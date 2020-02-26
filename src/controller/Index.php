@@ -69,26 +69,64 @@ class Index
     }
 
     /**
-     * @desc 视频播放页
+     * @desc 视频播放页 - mp4
      */
     public function show ()
     {
         $name = $_REQUEST['N'];
-
         $model = new Video();
+        $tokenModel = new Token();
+        $token = $tokenModel->getToken();
+
+        if (!empty($_REQUEST['T'])) {
+            if ($_REQUEST['T'] == 'hls') {
+                return $this->_showHls($token);
+            }
+        }
+
         if (!$model->checkoutVideoName($name)) {
             return view('error');
         }
 
-        $tokenModel = new Token();
-        $token = $tokenModel->getToken();
-
         return view(__FUNCTION__, [
-            'id' => md5($name),
-            'name' => $name,
-            'api' => config('danmaku.api'),
-            'token' => $token,
-            'user' => ip(),
+            'json' => json_encode([
+                'id' => md5($name),
+                'name' => $name,
+                'api' => config('danmaku.api'),
+                'token' => $token,
+                'user' => ip(),
+                'url' => "./video/{$name}.mp4",
+                'pic' => "./video/thum/{$name}.jpg",
+            ]),
+            'title' => $name,
+        ]);
+    }
+
+    /**
+     * @desc 视频播放页 - hls
+     * @param $token
+     */
+    private function _showHls ($token)
+    {
+        $name = $_REQUEST['N'];
+        $model = new Video();
+
+        if (!$model->checkoutHlsVideo($name)) {
+            return view('error');
+        }
+
+        $hlsVideoInfo = $model->getVideoHlsInfo($name);
+        return view('show', [
+            'json' => json_encode([
+                'id' => $hlsVideoInfo['hash'],
+                'name' => $hlsVideoInfo['name'],
+                'api' => config('danmaku.api'),
+                'token' => $token,
+                'user' => ip(),
+                'url' => "./video/hls/{$name}/index.m3u8",
+                'pic' => "./video/hls/{$name}/index.png",
+            ]),
+            'title' => $hlsVideoInfo['name'],
         ]);
     }
 
