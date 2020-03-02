@@ -83,7 +83,7 @@ if (!is_file($path)) {
 }
 
 // 切割MP4文件为ts文件，生成index.m3u8文件
-$cmd = "ffmpeg -i {$path} -strict -2 -hls_time 2 -hls_list_size 0 -hls_key_info_file enc.keyinfo -hls_segment_filename \"index-%d.ts\" index.m3u8";
+$cmd = "ffmpeg -i \"{$path}\" -strict -2 -hls_time 2 -hls_list_size 0 -hls_key_info_file enc.keyinfo -hls_segment_filename \"index-%d.ts\" index.m3u8";
 
 // 实时显示终端执行结果
 ob_start();
