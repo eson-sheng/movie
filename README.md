@@ -31,9 +31,9 @@ server {
 }
 ```
 
-- 直接克隆主分支到服务目录：
+- 克隆`release`分支到服务目录：
 ```shell
-git clone git@github.com:eson-sheng/movie.git
+git clone -b release git@github.com:eson-sheng/movie.git
 ```
 
 - 执行项目中的`SQL`文件：
