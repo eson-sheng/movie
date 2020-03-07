@@ -31,7 +31,7 @@ function view ($v, $param = [])
  */
 function config ($key)
 {
-    $config = require_once __DIR__ . '/../config/params.php';
+    $config = require __DIR__ . '/../config/params.php';
     return $config[$key];
 }
 

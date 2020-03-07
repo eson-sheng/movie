@@ -9,6 +9,7 @@
 namespace controller;
 
 use model\Danmaku;
+use model\OssModel;
 use model\Token;
 use model\Video;
 use ResponseCode as ErrorCode;
@@ -22,13 +23,18 @@ class Index
         if (!empty($_REQUEST['api'])) {
 
             // 添加弹幕
-            if (empty($_GET['id'])) {
+            if (empty($_GET['id']) && $_GET['api'] == 'danmaku') {
                 return $this->add();
             }
 
             // 获取弹幕列表
             if (!empty($_GET['id'])) {
                 return $this->showList();
+            }
+
+            // oss 方式加载视频
+            if (!empty($_GET['oss'])) {
+                return $this->ossUrl();
             }
 
             // 默认返回
@@ -193,5 +199,15 @@ class Index
 
         $code = ErrorCode::SUCCESS;
         return json($ret['info'], $code);
+    }
+
+    /**
+     * @desc 302跳转oss资源文件
+     * @return bool
+     */
+    public function ossUrl ()
+    {
+        $ossModel = new OssModel();
+        return $ossModel->goToUrl($_GET['oss']);
     }
 }
