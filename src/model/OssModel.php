@@ -26,10 +26,12 @@ class OssModel
     public function __construct ()
     {
         $this->_config = config('oss.params');
+        $redis_config = require_once __DIR__ . '/../../config/redis.php';
+        $this->_config['redis.auth'] = $redis_config['redis.auth'];
 
         $this->redis = new Redis();
         $this->redis->connect('127.0.0.1', 6379);
-        $this->redis->auth('');
+        $this->redis->auth($this->_config['redis.auth']);
         $this->redis->select(1);
     }
 
