@@ -9,6 +9,7 @@ http://movie.eson.site/
 [![nginx Stable version](https://img.shields.io/badge/nginx-1.16.1-1c6333)](http://nginx.org/en/download.html)
 [![mysql version](https://img.shields.io/badge/mysql-8.0.13-e17009)](https://dev.mysql.com/downloads/mysql/)
 [![ffmpeg version](https://img.shields.io/badge/ffmpeg-4.2.2-5cb85c)](http://www.ffmpeg.org/download.html) 
+[![redis version](https://img.shields.io/badge/redis-5.0.7-dd4b39)](https://redis.io/download) 
 
 ## 安装
 - 建立`nginx`服务目录，以下是示例：
