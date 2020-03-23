@@ -34,6 +34,7 @@ class Index
 
             // oss 方式加载视频
             if (!empty($_GET['oss'])) {
+                Header("Access-Control-Allow-Origin:*");
                 return $this->ossUrl();
             }
 
