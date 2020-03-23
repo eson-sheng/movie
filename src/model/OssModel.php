@@ -62,7 +62,7 @@ class OssModel
         );
         $sign_url_encode = urlencode($Sign);
         $path = urlencode($file);
-        $url = "{$this->_config['endpoint']}{$path}?OSSAccessKeyId={$this->_config['accessKeyId']}&&Expires={$expire}&Signature={$sign_url_encode}";
+        $url = "{$this->_config['endpoint']}{$path}?OSSAccessKeyId={$this->_config['accessKeyId']}&Expires={$expire}&Signature={$sign_url_encode}";
 
         // 存储redis
         $this->setCache($file, $url);
