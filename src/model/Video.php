@@ -62,6 +62,10 @@ class Video
                 }
             }
         }
+
+        # 文件名称按顺序排列
+        sort($list);
+
         return $list;
     }
 
