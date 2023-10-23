@@ -1,22 +1,17 @@
 #!/usr/bin/env php
 <?php
-/**
- * Created by PhpStorm.
- * User: eson
- * Date: 2020-02-27
- * Time: 00:24
- */
 
 // 设置命令行需要的参数
 $long_opt = array(
     'path:',
+    'domain:'
 );
 $params = getopt('', $long_opt);
 
 // 判断参数不能为空
 if (empty($params)) {
     echo "\n\nThis is a simple add Movie tool (●ﾟωﾟ●)\n
-usage `php addMovie.php --path \"{path}\"` \n\n";
+usage `php addMovie.php --path \"{path}\" --domain \"{domain}\"` \n\n";
     exit();
 }
 
@@ -93,6 +88,51 @@ while (!feof($proc)) {
     flush();
 }
 ob_end_flush();
+
+// 如果域名配置不为空，则设置域名地址到index.m3u8
+if (!empty($params['domain'])) {
+    $domain = $params['domain'];
+    // 处理开头是否为http://或者https:// 如果没有默认为 http://
+    if (!preg_match("~^(?:f|ht)tps?://~i", $domain)) {
+        $domain = "http://" . $domain;
+    }
+    // 组织拼接视频链接资源地址
+    $url = "{$domain}/?api=1&oss={$hash}/";
+    // 修改m3u8文件内容，读取文件内容
+    echo "\n\n 修改m3u8文件内容... \n\n";
+    $file = new SplFileObject("{$hlsPath}/{$hash}/index.m3u8", 'r+');
+    // 逐行读取并修改文件
+    $content = '';
+    while (!$file->eof()) {
+        $line = $file->fgets();
+        // 替换URI中enc.key内容
+        if (strpos($line, 'URI="enc.key"') !== false) {
+            $line = str_replace('URI="enc.key"', 'URI="'.$url.'enc.key"', $line);
+            // echo " 替换URI中enc.key内容... \n";
+        }
+        // 替换index-*.ts内容
+        if (preg_match('/index-(\d+).ts/', $line)) {
+            $line = preg_replace_callback('/index-(\d+).ts/', function ($matches) use ($url) {
+                // echo " 替换index-{$matches[1]}.ts内容... \n";
+                return $url.'index-'.$matches[1].'.ts';
+            }, $line);
+        }
+        echo ".";
+        // 文件内容
+        $content .= $line;
+    }
+    echo "\n\n";
+
+    // 清空文件并回到文件开头
+    $file->ftruncate(0);
+    $file->rewind();
+
+    // 写入修改后的内容
+    $file->fwrite($content);
+
+    // 关闭文件
+    $file = null;
+}
 
 // 如果索引文件生成则成功
 if (file_exists("{$hlsPath}/{$hash}/index.m3u8")) {
