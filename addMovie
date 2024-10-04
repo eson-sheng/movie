@@ -24,7 +24,7 @@ if (!is_file($path)) {
 
 // 判断只能是MP4文件
 $ext = pathinfo($path, PATHINFO_EXTENSION);
-if ($ext != 'mp4') {
+if  (!in_array($ext, ['mp4', 'mkv'])) {
     echo _error_ex('Error: This tool only supports MP4 files ! (╯︵╰)');
     exit();
 }
