@@ -22,6 +22,7 @@ function view ($v, $param = [])
     ob_end_clean();
 
     echo $html;
+    return true;
 }
 
 /**
@@ -97,4 +98,5 @@ function json ($data = [], $code = 0)
         'code' => $code,
         'data' => $data
     ]);
+    return true;
 }
