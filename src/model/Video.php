@@ -64,7 +64,20 @@ class Video
         }
 
         # 文件名称按顺序排列
-        sort($list);
+        foreach ($list as $v) {
+            if (empty($v['name'])) {
+                $nat_sort_list[] = $v;
+            } else {
+                $sort_list[] = $v;
+            }
+        }
+
+        natsort($nat_sort_list);
+        $nat_sort_list = array_values($nat_sort_list);
+
+        sort($sort_list);
+
+        $list = array_merge($nat_sort_list, $sort_list);
 
         return $list;
     }
