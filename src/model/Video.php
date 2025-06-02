@@ -53,7 +53,7 @@ class Video
                                     $hash
                                 );
                             }
-                            if ($ext == 'mp4') {
+                            if (in_array($ext, ['mp4', 'MP4'])) {
                                 $list[] = pathinfo($file, PATHINFO_FILENAME);
                                 $this->getVideoPhoto($p);
                             }
