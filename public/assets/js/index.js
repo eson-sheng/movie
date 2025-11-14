@@ -22,6 +22,8 @@ const dp = new DPlayer({
     },
     autoplay: true,
     screenshot: true,
+    loop: true,
+    airplay: true,
     theme: 'pink',
     danmaku: {
         id: json.id,
