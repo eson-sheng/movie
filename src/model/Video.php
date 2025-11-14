@@ -63,28 +63,35 @@ class Video
             }
         }
 
-        # 文件名称按顺序排列
-        $sort_list = [];
-        foreach ($list as $v) {
-            if (empty($v['name'])) {
-                $nat_sort_list[] = $v;
-            } else {
-                $sort_list[] = $v;
+        return $list;
+    }
+
+    /**
+     * @desc 目录下所有视频文件名称按照自然排序
+     * @param string $key 数组中作为排序字段的 key（默认 name）
+     * @param bool   $nullLast 是否把没有 name 的排在最后（true=排后，false=排前）
+     * @return array 排好序的数组
+     */
+    public function getVideoListForSortByNameNatural(string $key = 'name', bool $nullLast = true) 
+    {
+        $list = $this->getVideoList();
+
+        usort($list, function ($a, $b) use ($key, $nullLast) {
+            // 提取可排序名称：字符串自身 or 数组字段
+            $nameA = is_array($a) ? ($a[$key] ?? null) : $a;
+            $nameB = is_array($b) ? ($b[$key] ?? null) : $b;
+
+            // name 为空处理
+            if ($nameA === null && $nameB !== null) {
+                return $nullLast ? 1 : -1;
             }
-        }
+            if ($nameA !== null && $nameB === null) {
+                return $nullLast ? -1 : 1;
+            }
 
-        if (!empty($nat_sort_list)) {
-            natsort($nat_sort_list);
-            $nat_sort_list = array_values($nat_sort_list);
-        }
-
-        if (!empty($sort_list)) {
-            sort($sort_list);
-        }
-
-        if (!empty($nat_sort_list)) {
-            $list = array_merge($nat_sort_list, $sort_list);
-        }
+            // 都为 null 或都存在 → 正常自然排序
+            return strnatcasecmp($nameA ?? '', $nameB ?? '');
+        });
 
         return $list;
     }
