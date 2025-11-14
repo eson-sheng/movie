@@ -69,7 +69,7 @@ class Index
     public function index ()
     {
         $model = new Video();
-        $list = $model->getVideoList();
+        $list = $model->getVideoListForSortByNameNatural();
         return view(__FUNCTION__, [
             'list' => $list,
         ]);
