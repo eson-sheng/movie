@@ -97,7 +97,7 @@ if (!empty($params['domain'])) {
         $domain = "http://" . $domain;
     }
     // 组织拼接视频链接资源地址
-    $url = "{$domain}/?api=1&oss={$hash}/";
+    $url = "{$domain}/?api=1&oss=movie/{$hash}/";
     // 修改m3u8文件内容，读取文件内容
     echo "\n\n 修改m3u8文件内容... \n\n";
     $file = new SplFileObject("{$hlsPath}/{$hash}/index.m3u8", 'r+');
