@@ -1,140 +1,403 @@
 # 看电影
-> 🎥 好酷！超简洁！要快速搭建的`弹幕`电影网站项目。
-http://video.shengxuecheng.cn/
 
-> 项目正在迁移到 Vue 3 + Vite + TypeScript 前端和 PHP 8 + Composer API。新架构的开发、接口及部署方式见 [docs/refactor.md](docs/refactor.md)。旧入口暂时保留用于回滚。
+一个轻量、可自行部署的在线影片库，支持 MP4、HLS 加密切片和弹幕播放。
 
-## 环境 
-> 下载稳定的版本 `Stable Version` 不用一样。
+项目采用前后端分离架构：Vue 3 负责影片列表、搜索和播放页面，PHP 8 提供视频与弹幕 JSON API，Nginx 负责 SPA、API 和视频静态资源分发。
 
-[![PHP Version](https://img.shields.io/badge/php-%3E%3D5.6-8892BF)](https://www.php.net/downloads.php)
-[![nginx Stable version](https://img.shields.io/badge/nginx-1.16.1-1c6333)](http://nginx.org/en/download.html)
-[![mysql version](https://img.shields.io/badge/mysql-8.0.13-e17009)](https://dev.mysql.com/downloads/mysql/)
-[![ffmpeg version](https://img.shields.io/badge/ffmpeg-4.2.2-5cb85c)](http://www.ffmpeg.org/download.html) 
-[![redis version](https://img.shields.io/badge/redis-5.0.7-dd4b39)](https://redis.io/download) 
+访问地址：[https://video.shengxuecheng.cn/](https://video.shengxuecheng.cn/)
+
+## 功能
+
+- 自动读取本地 MP4 和 HLS 影片
+- 按影片名称自然排序和即时搜索
+- DPlayer 视频播放与 hls.js 支持
+- 进入播放页后优先尝试有声自动播放
+- 浏览器阻止自动播放时提供“点击开始有声播放”按钮
+- 默认循环播放
+- 弹幕读取、发送和历史弹幕回放
+- Session CSRF 防护
+- MP4、HLS、封面统一由 Nginx 提供
+- 桌面端和移动端响应式页面
+
+## 技术栈
+
+### 前端
+
+- Vue 3
+- Vite
+- TypeScript
+- Vue Router
+- DPlayer
+- hls.js
+- Yarn
+
+### 后端
+
+- PHP 8.2+
+- Composer / PSR-4
+- PDO
+- MySQL 8
+- Nginx + PHP-FPM
+
+### 视频处理
+
+- FFmpeg
+- OpenSSL
+
+## 环境要求
+
+| 组件 | 建议版本 |
+| --- | --- |
+| PHP | 8.2 或更高 |
+| Composer | 2.x |
+| Node.js | 22.x |
+| Yarn | 1.22 或更高 |
+| MySQL | 8.x |
+| Nginx | 稳定版 |
+| FFmpeg | 仅导入或转码影片时需要 |
+| OpenSSL | 仅生成加密 HLS 时需要 |
+
+## 目录结构
+
+```text
+movie/
+├── backend/
+│   ├── config/                PHP API 配置
+│   ├── public/                PHP API 内部入口
+│   └── src/
+│       ├── Controller/        视频与弹幕控制器
+│       ├── Database/          PDO 连接
+│       ├── Http/              请求、路由和 JSON 响应
+│       ├── Repository/        弹幕数据访问
+│       ├── Security/          CSRF Token
+│       └── Service/           视频目录服务
+├── frontend/
+│   ├── src/
+│   │   ├── api/               前端 API 封装
+│   │   ├── components/        页头与播放器组件
+│   │   ├── router/            Vue Router
+│   │   ├── styles/            全局样式
+│   │   ├── types/             TypeScript 类型
+│   │   └── views/             列表页与播放页
+│   ├── package.json
+│   ├── vite.config.ts
+│   └── yarn.lock
+├── public/
+│   ├── app/                   Vue 生产构建结果
+│   ├── video/
+│   │   ├── hls/               HLS 影片
+│   │   └── thum/              MP4 缩略图
+│   ├── api.php                生产 API 入口
+│   └── favicon.ico
+├── config/                    数据库配置
+├── deploy/                    Nginx 配置示例
+├── docs/                      改造和部署补充文档
+├── sql/movie.sql              弹幕表初始化 SQL
+├── addMovie                   HLS 转码工具
+├── dev-router.php             PHP 本地开发路由
+├── composer.json
+└── README.md
+```
+
+`public/app/`、`frontend/node_modules/` 和 `vendor/` 都是可重新生成的目录，不应手工修改。
 
 ## 安装
-- 建立`nginx`服务目录，以下是示例：
-> 入口文件为：`/movie/public/index.php`
 
-```nginx
-server {
-    charset utf-8;
-    listen 80;
-    server_name [域名];
+### 1. 安装 PHP 依赖
 
-    # 示例服务地址
-    root   /home/wwwroot/default/movie/public;
-    index  index.php index.html;
-
-    include enable-php.conf;
-
-    access_log /home/wwwlogs/access.log;
-    error_log /home/wwwlogs/error.log;
-}
+```bash
+composer install
 ```
 
-- 克隆`release`分支到服务目录：
-```shell
-git clone -b release git@github.com:eson-sheng/movie.git
+### 2. 安装前端依赖
+
+```bash
+cd frontend
+yarn install --frozen-lockfile
 ```
 
-- 执行项目中的`SQL`文件：
-```shell
-/movie/sql/movie.sql
+### 3. 初始化数据库
+
+在 MySQL 中执行：
+
+```text
+sql/movie.sql
 ```
 
-- 编写`MySQL`配置文件：
-> `/movie/config/local_database.php`
+新建本地数据库配置 `config/local_database.php`：
 
 ```php
 <?php
 
 return [
     'database' => 'movie',
-    'password' => '***您的数据库密码***',
+    'username' => 'root',
+    'password' => '你的数据库密码',
 ];
 ```
 
-- 另外，视频的资源目录：
-1. 格式为`mp4`的视频可以直接放在`/movie/public/video`目录下，浏览首页时会自动解析列表生成缩略图。
-2. 关于`hls`的视频需要使用工具切成`ts`格式生成`m3u8`的播放列表索引的`hash`目录，放在`/movie/public/video/hls`项目目录地址里。如图：
-![关于hls视频目录示例](./public/assets/img/hls.png)
-`enc.iv.txt` - `iv`的`hash`偏移量
-`enc.key` - 视频加密用的秘钥
-`index.json` - 视频信息说明示例：
+`config/local_database.php` 已被 Git 忽略，不要把真实密码提交到仓库。
+
+生产环境也可以使用环境变量覆盖：
+
+```text
+MOVIE_DB_HOST
+MOVIE_DB_PORT
+MOVIE_DB_NAME
+MOVIE_DB_USERNAME
+MOVIE_DB_PASSWORD
+```
+
+## 本地开发
+
+终端一启动 PHP API 和视频资源服务：
+
+```bash
+php -S 127.0.0.1:8080 -t public dev-router.php
+```
+
+终端二启动 Vue 开发服务器：
+
+```bash
+cd frontend
+yarn dev
+```
+
+Vite 会把 `/api` 和 `/video` 请求代理到 `http://127.0.0.1:8080`。
+
+## 添加影片
+
+### MP4
+
+将 MP4 文件放入：
+
+```text
+public/video/
+```
+
+对应缩略图放入：
+
+```text
+public/video/thum/影片文件名.jpg
+```
+
+例如：
+
+```text
+public/video/示例影片.mp4
+public/video/thum/示例影片.jpg
+```
+
+影片 ID 由不含扩展名的文件名计算 MD5 得到。
+
+### HLS
+
+使用项目提供的工具：
+
+```bash
+php addMovie --path="/absolute/path/movie.mp4"
+```
+
+需要替换 HLS 切片地址时可以指定域名：
+
+```bash
+php addMovie \
+  --path="/absolute/path/movie.mp4" \
+  --domain="https://video.example.com"
+```
+
+生成目录结构：
+
+```text
+public/video/hls/{md5}/
+├── enc.iv.txt
+├── enc.key
+├── enc.keyinfo
+├── index.json
+├── index.m3u8
+├── index.png
+└── index-*.ts
+```
+
+`index.json` 示例：
+
 ```json
 {
-  "name": "我的影片",
-  "hash": "md5(我的影片)"
+  "name": "影片名称",
+  "hash": "影片名称对应的 MD5"
 }
 ```
-`index.m3u8` - 切片视频`ts`的播放列表
-`index.png` - 视频缩略图
-`index-%d.ts` - 加密的切片`ts`视频
 
-### 添加`hls`视频的工具：`addMovie`
-使用命令行执行： 
-`php addMovie --path "{path}"`
+视频列表请求只读取已有文件和元数据，不会在普通 HTTP 请求中运行 FFmpeg。
 
-## 目录结构
-初始的目录结构如下：
-```
-./movie                    项目部署根目录
-├── README.md              自述文件
-├── addMovie               命令行添加视频工具
-├── config                 应用配置目录
-│   ├── database.php       数据库配置
-│   ├── local_database.php 本地化数据库配置
-│   ├── local_params.php   本地化参数配置
-│   └── params.php         参数配置
-├── public                 WEB目录（对外访问目录）
-│   ├── assets             静态资源目录
-│   │   ├── css            css文件目录
-│   │   │   ├── error.css  错误页面css样式表
-│   │   │   └── index.css  默认页css样式表
-│   │   ├── img            图片目录
-│   │   │   ├── hls.png    hls图片示例
-│   │   │   └── play.png   播放图片动画
-│   │   └── js             js文件目录
-│   │       └── index.js   默认页js特效文件
-│   ├── favicon.ico        标题小图标
-│   ├── index.php          入口文件
-│   ├── plugin             插件目录
-│   │   ├── dplayer        dplayer插件
-│   │   │   └── ...
-│   │   └── hls.js         hlsjs插件
-│   │           └── ...
-│   └── video             视频资源目录 - MP4
-│       ├── hls           视频资源目录 - m3u8
-│       └── thum          视频缩略图目录
-├── sql                   SQL文件目录
-│   └── movie.sql         MySQL文件初始化建立数据库
-└── src                   应用目录
-    ├── ResponseCode.php  错误码类文件
-    ├── autoload.php      自动加载文件
-    ├── common.php        公共函数文件
-    ├── controller        控制器目录
-    │   └── Index.php     默认控制器
-    ├── model             模型目录
-    │   ├── Danmaku.php   弹幕模型文件
-    │   ├── Index.php     默认模型文件
-    │   ├── Token.php     令牌模型文件
-    │   └── Video.php     视频模型文件
-    ├── validate          验证器目录
-    │   ├── Danmaku.php   弹幕验证器文件
-    │   └── Index.php     默认验证器文件
-    └── view              视图层目录
-        ├── error.html    错误视图页面文件
-        ├── index.html    默认视图页面文件
-        └── show.html     视频显示视图页面文件
+## API
 
-20 个文件夹目录, 38 个文件, 6.6M 的总大小
+| 方法 | 地址 | 说明 |
+| --- | --- | --- |
+| GET | `/api/v1/health` | 健康检查 |
+| GET | `/api/v1/csrf-token` | 获取当前 Session 的 CSRF Token |
+| GET | `/api/v1/videos` | 获取影片列表 |
+| GET | `/api/v1/videos/{id}` | 获取影片播放信息 |
+| GET | `/api/v1/videos/{id}/danmaku` | 获取历史弹幕 |
+| POST | `/api/v1/videos/{id}/danmaku` | 发送弹幕 |
 
+统一响应格式：
+
+```json
+{
+  "code": 0,
+  "message": "OK",
+  "data": {}
+}
 ```
 
-## 配置讲述
-配置在`./movie/config` 目录中有两个文件：`database.php`是数据配置，`params.php`是弹幕接口参数配置。只要在新建文件前加上`local_`前缀就可以覆盖及合并。
+发送弹幕前，需要从 `/api/v1/csrf-token` 获取 Token，并在同一个 Session 中通过请求头提交：
 
-# 关于码主
-**我的博客：http://shengxuecheng.cn/**
+```http
+X-CSRF-Token: token-value
+```
+
+## 检查与构建
+
+PHP 配置与语法检查：
+
+```bash
+composer validate --strict
+composer check
+```
+
+前端类型检查：
+
+```bash
+cd frontend
+yarn type-check
+```
+
+生产构建：
+
+```bash
+cd frontend
+yarn build
+```
+
+构建结果写入：
+
+```text
+public/app/
+```
+
+## 生产部署
+
+安装生产 PHP 依赖并构建前端：
+
+```bash
+composer install --no-dev --optimize-autoloader
+
+cd frontend
+yarn install --frozen-lockfile
+yarn build
+```
+
+Nginx 的站点根目录必须是项目的 `public`，不能直接指向 `public/app`，因为 `/api.php` 和 `/video` 也位于 `public` 下。
+
+```nginx
+server {
+    listen 80;
+    server_name video.example.com;
+
+    charset utf-8;
+    root /path/to/movie/public;
+    index index.html;
+
+    location ^~ /api/ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root/api.php;
+        fastcgi_param SCRIPT_NAME /api.php;
+        fastcgi_pass unix:/var/tmp/php-fpm.sock;
+    }
+
+    location ^~ /video/ {
+        try_files $uri =404;
+        add_header Accept-Ranges bytes always;
+        add_header Cache-Control "public, max-age=3600";
+    }
+
+    location ^~ /app/assets/ {
+        try_files $uri =404;
+        expires 1y;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    location = /favicon.ico {
+        try_files $uri =404;
+        expires 7d;
+    }
+
+    location / {
+        try_files $uri /app/index.html;
+    }
+
+    location ~ \.php$ {
+        return 404;
+    }
+}
+```
+
+完整示例见 `deploy/nginx.conf.example`。不同服务器的 PHP-FPM 可能监听 TCP 端口或其他 Socket，请根据实际环境修改 `fastcgi_pass`。
+
+检查并重载 Nginx：
+
+```bash
+nginx -t
+nginx -s reload
+```
+
+部署后检查：
+
+```text
+https://video.example.com/
+https://video.example.com/api/v1/health
+```
+
+## 常见问题
+
+### 首页返回 403 directory index is forbidden
+
+确认 SPA 配置没有使用 `$uri/`：
+
+```nginx
+location / {
+    try_files $uri /app/index.html;
+}
+```
+
+### 自动播放没有声音
+
+Chrome、Safari 等浏览器会限制未经用户操作的有声自动播放。项目会优先尝试有声播放；被浏览器阻止时，会显示“点击开始有声播放”按钮。
+
+### 修改前端后页面仍是旧版本
+
+重新构建并强制刷新：
+
+```bash
+cd frontend
+yarn build
+```
+
+macOS 浏览器可以使用 `Command + Shift + R` 强制刷新。
+
+### 弹幕发送成功但历史弹幕不显示
+
+确认 `/api/v1/videos/{id}/danmaku` 返回成功，并检查浏览器 Console 和 PHP/Nginx 错误日志。前端会把数据库返回的 DPlayer 数组格式转换为播放器对象格式。
+
+## 安全提示
+
+- 不要提交数据库密码、私钥或 HLS 密钥配置。
+- 生产环境建议启用 HTTPS。
+- 只将 `public/` 暴露为 Web 根目录。
+- 不要允许 Web 用户直接访问 `backend/`、`config/`、`vendor/` 等目录。
+- HLS 加密只用于媒体传输保护，不等同于完整 DRM。
+
+## 关于码主
+
+[北辰妙语](https://blog.shengxuecheng.cn/)
