@@ -2,6 +2,8 @@
 > 🎥 好酷！超简洁！要快速搭建的`弹幕`电影网站项目。
 http://video.shengxuecheng.cn/
 
+> 项目正在迁移到 Vue 3 + Vite + TypeScript 前端和 PHP 8 + Composer API。新架构的开发、接口及部署方式见 [docs/refactor.md](docs/refactor.md)。旧入口暂时保留用于回滚。
+
 ## 环境 
 > 下载稳定的版本 `Stable Version` 不用一样。
 
