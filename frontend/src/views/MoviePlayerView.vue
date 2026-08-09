@@ -25,7 +25,7 @@ onMounted(async () => {
     <RouterLink class="back-link" to="/">← 返回影片列表</RouterLink>
     <p v-if="error" class="state-message error">{{ error }}</p>
     <template v-else-if="video">
-      <h1 class="player-title">{{ video.name }}</h1>
+      <h1 class="player-title" :title="video.name">{{ video.name }}</h1>
       <MoviePlayer :video="video" />
     </template>
     <p v-else class="state-message">正在准备播放器…</p>
