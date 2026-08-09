@@ -354,7 +354,7 @@ server {
     # 兼容旧 HLS 清单中的 /?api=1&oss=movie/... 地址
     location = / {
         if ($arg_oss != "") {
-            rewrite ^ /api/v1/oss?object=$arg_oss last;
+            return 302 /api/v1/oss?object=$arg_oss;
         }
         try_files /app/index.html =404;
     }
