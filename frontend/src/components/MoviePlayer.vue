@@ -177,7 +177,6 @@ function createPlayer(
       @click="startPlayback"
     >
       <span>▶</span>
-      点击开始有声播放
     </button>
   </div>
 </template>
