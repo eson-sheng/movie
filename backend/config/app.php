@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 $database = require dirname(__DIR__, 2) . '/config/database.php';
+$params = require dirname(__DIR__, 2) . '/config/params.php';
 
 return [
     'database' => [
@@ -14,4 +15,5 @@ return [
     ],
     'video_path' => dirname(__DIR__, 2) . '/public/video',
     'media_base_url' => '/video',
+    'oss' => $params['oss.params'] ?? [],
 ];
