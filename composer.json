@@ -1,0 +1,17 @@
+{
+    "name": "eson/movie",
+    "description": "Movie library JSON API",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Movie\\": "backend/src/"
+        }
+    },
+    "scripts": {
+        "check": "find backend/src backend/public public/api.php -name '*.php' -print0 | xargs -0 -n1 php -l"
+    }
+}

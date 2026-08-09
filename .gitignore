@@ -1,2 +1,5 @@
 .idea
 /config/local_*
+/vendor/
+/frontend/node_modules/
+/public/app/
