@@ -138,7 +138,24 @@ return [
 
 `config/local_database.php` 已被 Git 忽略，不要把真实密码提交到仓库。
 
-生产环境也可以使用环境变量覆盖：
+使用私有 OSS 保存 HLS 密钥和切片时，新建 `config/local_params.php`：
+
+```php
+<?php
+
+return [
+    'oss.params' => [
+        'accessKeyId' => '你的 AccessKey ID',
+        'accessKeySecret' => '你的 AccessKey Secret',
+        'endpoint' => 'https://bucket-name.oss-region.aliyuncs.com/',
+        'bucket' => 'bucket-name',
+    ],
+];
+```
+
+OSS 接口只允许签名 `movie/{影片MD5}/enc.key` 和 `movie/{影片MD5}/index-*.ts`。`config/local_params.php` 同样已被 Git 忽略，严禁提交真实 AccessKey。
+
+生产环境的数据库配置也可以使用以下环境变量覆盖：
 
 ```text
 MOVIE_DB_HOST
@@ -238,6 +255,7 @@ public/video/hls/{md5}/
 | GET | `/api/v1/csrf-token` | 获取当前 Session 的 CSRF Token |
 | GET | `/api/v1/videos` | 获取影片列表 |
 | GET | `/api/v1/videos/{id}` | 获取影片播放信息 |
+| GET | `/api/v1/oss?object={path}` | 获取 OSS 私有对象临时地址并 302 跳转 |
 | GET | `/api/v1/videos/{id}/danmaku` | 获取历史弹幕 |
 | POST | `/api/v1/videos/{id}/danmaku` | 发送弹幕 |
 
@@ -331,6 +349,14 @@ server {
     location = /favicon.ico {
         try_files $uri =404;
         expires 7d;
+    }
+
+    # 兼容旧 HLS 清单中的 /?api=1&oss=movie/... 地址
+    location = / {
+        if ($arg_oss != "") {
+            rewrite ^ /api/v1/oss?object=$arg_oss last;
+        }
+        try_files /app/index.html =404;
     }
 
     location / {
