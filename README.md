@@ -245,7 +245,7 @@ public/video/hls/{md5}/
 }
 ```
 
-视频列表请求只读取已有文件和元数据，不会在普通 HTTP 请求中运行 FFmpeg。
+视频列表请求会为尚无缩略图的 MP4 调用 FFmpeg，在 `public/video/thum/` 中生成预览图；已有缩略图不会重复生成。HLS 列表仍只读取已有文件和元数据。
 
 ## API
 
